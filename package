@@ -1,0 +1,22 @@
+{
+    'author': u'Marius Rieder <marius.rieder@durchmesser.ch>',
+    'description': u'Special Agent to check the JetBrains Floating License Server.',
+    'download_url': 'https://github.com/jiuka/checkmk_jb_fls/releases',
+    'files': {
+        'agents': ['special/agent_jb_fls'],
+        'checkman': [],
+        'checks': ['agent_jb_fls', 'jb_fls', 'jb_fls_licenses'],
+        'doc': [],
+        'inventory': [],
+        'notifications': [],
+        'pnp-templates': [],
+        'web': [
+          'plugins/wato/check_parameters_jb_fls_licenses.py',
+          'plugins/wato/datasource_jb_fls.py',
+        ]},
+    'name': 'jb_fls',
+    'title': u'Special Agent for the JetBrains Floating License Server',
+    'version': '0.1',
+    'version.min_required': '1.6.0',
+    'version.packaged': '1.6.0p11'
+}
