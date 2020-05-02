@@ -1,0 +1,53 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# jb_fls_licenses - JetBrains Floating Licenses check
+#
+# Copyright (C) 2020  Marius Rieder <marius.rieder@durchmesser.ch>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
+def parse_jb_fls_licenses(info):
+    parsed = {}
+    for line in info:
+        available = saveint(line[1])
+        allocated = saveint(line[2])
+        parsed[line[0]] = (available + allocated, allocated)
+    return parsed
+
+
+def inventory_jb_fls_licenses(parsed):
+    return [(license_type, None) for license_type in parsed]
+
+
+def check_jb_fls_licenses(item, params, parsed):
+    have, used = parsed.get(item, (None, None))
+
+    if not have:
+        return 3, "No licenses of that type found"
+
+    return license_check_levels(have, used, params)
+
+
+check_info['jb_fls_licenses'] = {
+    'parse_function': parse_jb_fls_licenses,
+    'inventory_function': inventory_jb_fls_licenses,
+    'check_function': check_jb_fls_licenses,
+    'service_description': 'JB Licenses %s',
+    'has_perfdata': True,
+    'group': 'jb_fls_licenses',
+    'includes': ['license.include']
+}

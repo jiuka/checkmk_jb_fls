@@ -1,0 +1,80 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+
+import argparse
+import urllib2
+import json
+
+class AgentJbFls:
+    def __init__(self):
+        self._cache = {}
+
+    def run(self):
+        self.parse_arguments()
+
+        self.report_agent()
+        self.report_fls()
+        if self.args.token:
+            self.report_licenses()
+
+    def parse_arguments(self):
+        parser = argparse.ArgumentParser(
+                description='Checkmk Agent for JetBrains Floating License Server')
+        parser.add_argument('-T', '--token', dest='token', required=False,
+                help='FLS reporting token.')
+        parser.add_argument('-U', '--url', dest='url', required=True,
+                help='URL of the FLS server. (Example http://host:1212)')
+
+        self.args = parser.parse_args()
+
+    def report_agent(self):
+        print("<<<check_mk>>>")
+        resp = self._get('check-version')[1] or {}
+        print("Version: %s" % resp.get('currentVersion', 'unknown'))
+        print("AgentOS: JetBrains FLS")
+
+    def report_fls(self):
+        print("<<<jb_fls:sep(9)>>>")
+
+        # Check Health
+        health = self._get('health')
+        print("health\t%s" % health[0])
+        for key, value in health[1].items():
+            print("%s\t%s" % (key, value))
+
+        # Check Connection
+        connection = self._get('check-connection')
+        for line in connection[1].splitlines():
+            print("connection\t%s" %  line);
+
+        # Check Version
+        version = self._get('check-version')
+        for key, value in version[1].items():
+            print("%s\t%s" % (key, value))
+
+    def report_licenses(self):
+        print("<<<jb_fls_licenses:sep(9)>>>")
+        try:
+            resp = self._get('licenses-report.json?token=%s' % (self.args.token))
+            for license in resp[1]['licenses']:
+                print("%s\t%s\t%s" % (license['name'], license['available'], license['allocated']))
+        except:
+            pass
+
+    def _get(self, url):
+        if url not in self._cache:
+            self._cache[url] = self._get_remote(url)
+        return self._cache[url]
+
+    def _get_remote(self, url):
+        try:
+            resp = urllib2.urlopen('%s/%s' % (self.args.url, url))
+            data = resp.read()
+            try:
+                return (resp.code, json.loads(data))
+            except:
+                return (resp.code, data)
+        except urllib2.HTTPError as e:
+            return (e.code, e.read)
+
+AgentJbFls().run()
