@@ -11,6 +11,9 @@
         'notifications': [],
         'pnp-templates': [],
         'web': [
+          'plugins/metrics/jb_fls.py',
+          'plugins/perfometer/jb_fls.py',
+          'plugins/wato/check_parameters_jb_fls.py',
           'plugins/wato/check_parameters_jb_fls_licenses.py',
           'plugins/wato/datasource_jb_fls.py',
         ]},
