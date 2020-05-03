@@ -10,6 +10,6 @@ Reports information from the [JetBrains Floating License Server](https://www.jet
 
 Checks the status of the Floating License Server.
 
-# Check jb_flsshare
+# Check jb_fls_licenses
 
 Reports informations about individual licenses. One check is discoverd for each installed license.
