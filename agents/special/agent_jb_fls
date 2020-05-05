@@ -29,8 +29,11 @@ class AgentJbFls:
 
     def report_agent(self):
         print("<<<check_mk>>>")
-        resp = self._get('check-version')[1] or {}
-        print("Version: %s" % resp.get('currentVersion', 'unknown'))
+        version = self._get('check-version')
+        if version[0] == 200:
+            print("Version: %s" % version[1].get('currentVersion', 'unknown')))
+        else:
+            print("Version: unknown")
         print("AgentOS: JetBrains FLS")
 
     def report_fls(self):
@@ -45,6 +48,8 @@ class AgentJbFls:
         # Check Connection
         connection = self._get('check-connection')
         for line in connection[1].splitlines():
+            if not line:
+                continue
             print("connection\t%s" %  line);
 
         # Check Version
@@ -54,12 +59,10 @@ class AgentJbFls:
 
     def report_licenses(self):
         print("<<<jb_fls_licenses:sep(9)>>>")
-        try:
-            resp = self._get('licenses-report.json?token=%s' % (self.args.token))
-            for license in resp[1]['licenses']:
+        licenses = self._get('licenses-report.json?token=%s' % (self.args.token))
+        if licenses[0 == 200:]
+            for license in licenses[1]['licenses']:
                 print("%s\t%s\t%s" % (license['name'], license['available'], license['allocated']))
-        except:
-            pass
 
     def _get(self, url):
         if url not in self._cache:

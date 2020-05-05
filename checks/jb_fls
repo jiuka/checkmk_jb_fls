@@ -35,7 +35,7 @@ def parse_jb_fls(lines):
         if line[0] == 'connection':
             parsed['connection'].append(line[1])
         else:
-            parsed[line[0]] = line[1]
+            parsed[line[0]] = line[1:]
     return parsed
 
 
@@ -53,20 +53,19 @@ def check_jb_fls(item, params, parsed):
 
     
     yield 0, 'Version: %s' % parsed.get('currentVersion', 'Unknown')
-    if parsed['updateAvailable'] != False:
+    if parsed.get('updateAvailable', False) != False:
         updateAvailableStatus = params.get('updateAvailable', 'W')
         if updateAvailableStatus == 'C':
-            yield 2, 'update available'
+            yield 2, _('update available')
         elif updateAvailableStatus == 'W':
-            yield 1, 'update available'
+            yield 1, _('update available')
         elif updateAvailableStatus == 'O':
-            yield 0, 'update available'
+            yield 0, _('update available')
 
 
     for line in parsed.get('connection', []):
-        url, state = line.split()
-        if state != 'OK':
-            yield 2, 'Connection to %s is %s' % (url, state)
+        if line[1] != 'OK':
+            yield 2, _('Connection to %s is %s') % line
 
 
     now = datetime.datetime.now()
@@ -75,7 +74,8 @@ def check_jb_fls(item, params, parsed):
     yield check_levels(age,
                        'age',
                        params.get('lastCallHome', None),
-                       human_readable_func=get_age_human_readable)
+                       human_readable_func=get_age_human_readable,
+                       infoname=_('Last call home'))
 
 
 check_info['jb_fls'] = {
