@@ -53,7 +53,7 @@ def check_jb_fls(item, params, parsed):
 
     
     yield 0, 'Version: %s' % parsed.get('currentVersion', 'Unknown')
-    if parsed.get('updateAvailable', False) != False:
+    if parsed.get('updateAvailable', 'False') != 'False':
         updateAvailableStatus = params.get('updateAvailable', 'W')
         if updateAvailableStatus == 'C':
             yield 2, _('update available')
