@@ -55,16 +55,16 @@ def check_jb_fls(item, params, parsed):
     if parsed.get('updateAvailable', 'False') != 'False':
         updateAvailableStatus = params.get('updateAvailable', 'W')
         if updateAvailableStatus == 'C':
-            yield 2, _('update available')
+            yield 2, 'update available'
         elif updateAvailableStatus == 'W':
-            yield 1, _('update available')
+            yield 1, 'update available'
         elif updateAvailableStatus == 'O':
-            yield 0, _('update available')
+            yield 0, 'update available'
 
 
     for line in parsed.get('connection', []):
         if line[1] != 'OK':
-            yield 2, _('Connection to %s is %s') % line
+            yield 2, 'Connection to %s is %s' % line
 
 
     now = datetime.datetime.now()
@@ -74,7 +74,7 @@ def check_jb_fls(item, params, parsed):
                        'age',
                        params.get('lastCallHome', None),
                        human_readable_func=get_age_human_readable,
-                       infoname=_('Last call home'))
+                       infoname='Last call home')
 
 
 check_info['jb_fls'] = {
