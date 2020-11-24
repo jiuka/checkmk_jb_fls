@@ -41,12 +41,11 @@ def parse_jb_fls(lines):
 
 def inventory_jb_fls(parsed):
     if 'serverUID' in parsed:
-        yield parsed['serverUID'], {}
+        yield None, {}
 
 
 def check_jb_fls(item, params, parsed):
-    if parsed.get('serverUID', None) != item:
-        return
+    yield 0, 'Server: %s' % parsed.get('serverUID', 'Unknown')
 
     if parsed.get('health', 500) != '200':
         yield 1, "Not healthy %s" % parsed.get('heath', 'Unknown')
@@ -82,7 +81,7 @@ check_info['jb_fls'] = {
   'parse_function'     : parse_jb_fls,
   'inventory_function' : inventory_jb_fls,
   'check_function'     : check_jb_fls,
-  'service_description': 'JB FLS %s',
+  'service_description': 'JB FLS',
   'has_perfdata': True,
   'group': 'jb_fls',
   'default_levels_variable': 'jb_fls_default_levels',
