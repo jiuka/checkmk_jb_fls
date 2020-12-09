@@ -41,9 +41,9 @@ graph_info["jb_fls_licenses"] = {
     "title": _("JetBrains licenses"),
     "metrics": [("jb_licenses", "area"),],
     "scalars": [
-        "licenses:warn",
-        "licenses:crit",
-        ("licenses:max#000000", "Installed licenses"),
+        "jb_licenses:warn",
+        "jb_licenses:crit",
+        ("jb_licenses:max#000000", "Installed licenses"),
     ],
-    "range": (0, "licenses:max"),
+    "range": (0, "jb_licenses:max"),
 }

@@ -33,9 +33,9 @@ def parse_jb_fls(lines):
     parsed = {'connection': []}
     for line in lines:
         if line[0] == 'connection':
-            parsed['connection'].append(line[1])
+            parsed['connection'].append(line[1:])
         else:
-            parsed[line[0]] = line[1:]
+            parsed[line[0]] = line[1]
     return parsed
 
 
@@ -50,7 +50,6 @@ def check_jb_fls(item, params, parsed):
     if parsed.get('health', 500) != '200':
         yield 1, "Not healthy %s" % parsed.get('heath', 'Unknown')
 
-    
     yield 0, 'Version: %s' % parsed.get('currentVersion', 'Unknown')
     if parsed.get('updateAvailable', 'False') != 'False':
         updateAvailableStatus = params.get('updateAvailable', 'W')

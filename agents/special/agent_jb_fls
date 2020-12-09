@@ -29,9 +29,9 @@ class AgentJbFls:
 
     def report_agent(self):
         print("<<<check_mk>>>")
-        version = self._get('check-version')
-        if version[0] == 200:
-            print("Version: %s" % version[1].get('currentVersion', 'unknown')))
+        resp = self._get('check-version')
+        if resp[0] == 200:
+            print("Version: %s" % resp[1].get('currentVersion', 'unknown'))
         else:
             print("Version: unknown")
         print("AgentOS: JetBrains FLS")
@@ -54,15 +54,15 @@ class AgentJbFls:
 
         # Check Version
         version = self._get('check-version')
-        for key, value in version[1].items():
-            print("%s\t%s" % (key, value))
+        if version[0] == 200:
+            for key, value in version[1].items():
+                print("%s\t%s" % (key, value))
 
     def report_licenses(self):
         print("<<<jb_fls_licenses:sep(9)>>>")
-        licenses = self._get('licenses-report.json?token=%s' % (self.args.token))
-        if licenses[0 == 200:]
-            for license in licenses[1]['licenses']:
-                print("%s\t%s\t%s" % (license['name'], license['available'], license['allocated']))
+        resp = self._get('licenses-report.json?token=%s' % (self.args.token))
+        for license in resp[1]['licenses']:
+            print("%s\t%s\t%s" % (license['name'], license['available'], license['allocated']))
 
     def _get(self, url):
         if url not in self._cache:
@@ -78,6 +78,6 @@ class AgentJbFls:
             except:
                 return (resp.code, data)
         except urllib2.HTTPError as e:
-            return (e.code, e.read)
+            return (e.code, e.read())
 
 AgentJbFls().run()

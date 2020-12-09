@@ -33,11 +33,11 @@ register_rule("datasource_programs",
             ( "token",
               TextAscii(
                   title = _("Report Token"),
-                  allow_empty = False,
+                  allow_empty = True,
               )
             ),
         ],
-        optional_keys = [ "token" ],
+        optional_keys = [ 'token' ],
     ),
     factory_default = watolib.Rulespec.FACTORY_DEFAULT_UNUSED, # No default, do not use setting if no rule matches
     match = 'first')
