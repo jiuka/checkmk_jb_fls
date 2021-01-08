@@ -39,6 +39,9 @@ class AgentJbFls:
     def report_fls(self):
         print("<<<jb_fls:sep(9)>>>")
 
+        # URL
+        print("url\t%s" % self.args.url)
+
         # Check Health
         health = self._get('health')
         print("health\t%s" % health[0])

@@ -39,7 +39,9 @@ metric_info["jb_licenses"] = {
 
 graph_info["jb_fls_licenses"] = {
     "title": _("JetBrains licenses"),
-    "metrics": [("jb_licenses", "area"),],
+    "metrics": [
+        ("jb_licenses", "area"),
+    ],
     "scalars": [
         "jb_licenses:warn",
         "jb_licenses:crit",
