@@ -17,27 +17,46 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+from cmk.gui.i18n import _
+from cmk.gui.plugins.wato import (
+    HostRulespec,
+    IndividualOrStoredPassword,
+    rulespec_registry,
+)
+from cmk.gui.valuespec import (
+    Dictionary,
+    HTTPUrl,
+)
+from cmk.gui.plugins.wato.datasource_programs import RulespecGroupDatasourceProgramsApps
 
-register_rule("datasource_programs",
-    "special_agents:jb_fls",
-     Dictionary(
-        title = _("Check state of a JetBrains Floating License Server"),
+
+def _valuespec_special_agents_jb_fls():
+    return Dictionary(
+        title=_("JetBrains Floating License Server"),
         help = _("This rule selects the JetBrains Floating License agent"),
         elements = [
-            ( "url",
-              HTTPUrl(
-                  title = _("URL of the JetBrains Floating License Server, e.g. https://host:1212/"),
-                  allow_empty = False,
-              )
+            (
+                'url',
+                HTTPUrl(
+                    title = _("URL of the JetBrains Floating License Server, e.g. https://host:1212/"),
+                    allow_empty = False,
+                )
             ),
-            ( "token",
-              TextAscii(
-                  title = _("Report Token"),
-                  allow_empty = True,
-              )
+            (
+                'token',
+                IndividualOrStoredPassword(
+                    title = _("JetBrains Floating License Report Token"),
+                    allow_empty = True,
+                )
             ),
         ],
-        optional_keys = [ 'token' ],
-    ),
-    factory_default = watolib.Rulespec.FACTORY_DEFAULT_UNUSED, # No default, do not use setting if no rule matches
-    match = 'first')
+        optional_keys = ['token'],
+    )
+
+
+rulespec_registry.register(
+    HostRulespec(
+        group=RulespecGroupDatasourceProgramsApps,
+        name='special_agents:jb_fls',
+        valuespec=_valuespec_special_agents_jb_fls,
+    ))

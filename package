@@ -3,9 +3,10 @@
     'description': u'Special Agent to check the JetBrains Floating License Server.',
     'download_url': 'https://github.com/jiuka/checkmk_jb_fls/releases',
     'files': {
+      'agent_based': ['jb_fls.py', 'jb_fls_licenses.py'],
         'agents': ['special/agent_jb_fls'],
         'checkman': [],
-        'checks': ['agent_jb_fls', 'jb_fls', 'jb_fls_licenses'],
+        'checks': ['agent_jb_fls'],
         'doc': [],
         'inventory': [],
         'notifications': [],
@@ -19,8 +20,8 @@
         ]},
     'name': 'jb_fls',
     'title': u'Special Agent for the JetBrains Floating License Server',
-    'version': '0.3',
-    'version.min_required': '1.6.0',
-    'version.packaged': '1.6.0p11',
-    'version.usable_until': '1.7.0'
+    'version': '1.0',
+    'version.min_required': '2.0.0b6',
+    'version.packaged': '2.0.0',
+    'version.usable_until': '2.1.0'
 }

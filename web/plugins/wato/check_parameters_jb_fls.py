@@ -21,7 +21,7 @@ from cmk.gui.i18n import _
 from cmk.gui.valuespec import (
     Age,
     Dictionary,
-    DropdownChoice,
+    MonitoringState,
     TextAscii,
     Tuple,
 )
@@ -36,39 +36,46 @@ def _vs_jb_fls():
     return Dictionary(
         title=_('JetBrains Floating License Server'),
         elements=[
-            ('updateAvailable',
-             DropdownChoice(
-                 title=_('Update Available'),
-                 choices=[
-                     ('C', _('CRITICAL')),
-                     ('W', _('WARNING')),
-                     ('O', _('OK')),
-                     ('I', _('IGNORE')),
-                 ],
-                 default_value='W',
-            )),
-            ('lastCallHome',
-             Tuple(
-                 title=_("Maximal time since last call home"),
-                 elements=[
-                     Age(title=_("Warning if older than")),
-                     Age(title=_("Critical if older than")),
-                 ],
-            )),
+            (
+                'updateAvailable',
+                MonitoringState(
+                    title=_('Update Available'),
+                    choices=[
+                        (2, _('CRIT')),
+                        (1, _('WARN')),
+                        (0, _('OK'))
+                        (None, _('IGNORE')),
+                    ],
+                    default_value='1',
+                )
+            ),
+            (
+                'lastCallHome',
+                Tuple(
+                    title=_('Maximal time since last call home'),
+                    elements=[
+                        Age(title=_('Warning if older than')),
+                        Age(title=_('Critical if older than')),
+                    ],
+                )
+            ),
         ]
     )
 
+
 def _item_spec_jb_fls():
     return TextAscii(
-        title=_("UID of the JetBrains Floating License Server"),
+        title=_('UID of the JetBrains Floating License Server'),
         allow_empty=False,
     )
 
+
 rulespec_registry.register(
     CheckParameterRulespecWithItem(
-        check_group_name="jb_fls",
+        check_group_name='jb_fls',
         group=RulespecGroupCheckParametersApplications,
         item_spec=_item_spec_jb_fls,
         parameter_valuespec=_vs_jb_fls,
-        title=lambda: _("JetBrains FLS check parameter"),
-    ))
+        title=lambda: _('JetBrains FLS check parameter'),
+    )
+)
