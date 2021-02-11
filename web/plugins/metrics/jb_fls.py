@@ -17,11 +17,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
+from cmk.gui.i18n import _
 from cmk.gui.plugins.metrics import (
     check_metrics,
-    metric_info,
     graph_info,
+    metric_info,
+    perfometer_info,
 )
 
 
@@ -31,21 +32,27 @@ check_metrics['check_mk-jb_fls_licenses'] = {
     },
 }
 
-metric_info["jb_licenses"] = {
-    "title": _("Used licenses"),
-    "unit": "count",
-    "color": "#ff6234",
+metric_info['jb_licenses'] = {
+    'title': _('Used licenses'),
+    'unit': 'count',
+    'color': '#ff6234',
 }
 
-graph_info["jb_fls_licenses"] = {
-    "title": _("JetBrains licenses"),
-    "metrics": [
-        ("jb_licenses", "area"),
+graph_info['jb_fls_licenses'] = {
+    'title': _('JetBrains licenses'),
+    'metrics': [
+        ('jb_licenses', 'area'),
     ],
-    "scalars": [
-        "jb_licenses:warn",
-        "jb_licenses:crit",
-        ("jb_licenses:max#000000", "Installed licenses"),
+    'scalars': [
+        'jb_licenses:warn',
+        'jb_licenses:crit',
+        ('jb_licenses:max#000000', 'Installed licenses'),
     ],
-    "range": (0, "jb_licenses:max"),
+    'range': (0, 'jb_licenses:max'),
 }
+
+perfometer_info.append({
+    'type': 'linear',
+    'segments': ['jb_licenses'],
+    'total': 'jb_licenses:max',
+})
