@@ -19,7 +19,7 @@
         ]},
     'name': 'jb_fls',
     'title': u'Special Agent for the JetBrains Floating License Server',
-    'version': '0.2',
+    'version': '0.3',
     'version.min_required': '1.6.0',
     'version.packaged': '1.6.0p11',
     'version.usable_until': '1.7.0'

@@ -49,7 +49,7 @@ def check_jb_fls(item, params, parsed):
     yield 0, '%s ' % parsed.get('url')
 
     if parsed.get('health', 500) != '200':
-        yield 1, "Not healthy %s" % parsed.get('heath', 'Unknown')
+        yield 1, "Not healthy %s" % parsed.get('health', 'Unknown')
 
     yield 0, 'Version: %s' % parsed.get('currentVersion', 'Unknown')
     if parsed.get('updateAvailable', 'False') != 'False':
