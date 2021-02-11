@@ -21,7 +21,7 @@
 def agent_jb_fls_arguments(params, hostname, ipaddress):
     args = ['--url', params['url']]
     if 'token' in params:
-        args += ['--token-cert', passwordstore_get_cmdline('%s', params['token'])]
+        args += ['--token', passwordstore_get_cmdline('%s', params['token'])]
     return args
 
 
