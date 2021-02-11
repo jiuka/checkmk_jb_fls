@@ -53,27 +53,28 @@ def discovery_jb_fls(section):
 
 
 def check_jb_fls(params, section):
-    Result(state=State.OK, summary='Server: %s %s' % (section.get('serverUID', 'Unknown'), section.get('url')))
+    yield Result(state=State.OK, summary='Server: %s %s' % (section.get('serverUID', 'Unknown'), section.get('url')))
 
     if section.get('health', 500) != '200':
-        Result(state=State.WARN, summary='Not healthy %s' % section.get('health', 'Unknown'))
+        yield Result(state=State.WARN, summary='Not healthy %s' % section.get('health', 'Unknown'))
 
-    Result(state=State.OK, summary='Version: %s' % section.get('currentVersion', 'Unknown'))
+    yield Result(state=State.OK, summary='Version: %s' % section.get('currentVersion', 'Unknown'))
     if section.get('updateAvailable', 'False') != 'False' and params.get('updateAvailable', 1):
         updateAvailableStatus = State(params.get('updateAvailable', 1))
-        Result(state=updateAvailableStatus, summary='update available')
+        yield Result(state=updateAvailableStatus, summary='update available')
 
     for line in section.get('connection', []):
         state = State.OK if line[1] == 'OK' else State.CRIT
-        Result(state=state, notice='Connection to %s is %s' % line)
+        yield Result(state=state, notice='Connection to %s is %s' % line)
 
     now = datetime.datetime.now()
     lastCallHome = datetime.datetime.strptime(section['lastCallHome'], '%d %b %Y %H:%M')
     age = (now - lastCallHome).total_seconds()
+
     yield from check_levels(
         value=age,
         metric_name='age',
-        levels_lower=params.get('lastCallHome', None),
+        levels_upper=params.get('lastCallHome', None),
         label='Last call home',
         render_func=render.timespan,
     )

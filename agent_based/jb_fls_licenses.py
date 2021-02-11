@@ -50,6 +50,7 @@ def discovery_jb_fls_licenses(section):
 
 def check_jb_fls_licenses(item, params, section):
     if item not in section:
+        print(f'{item} <> {section}')
         return
 
     license_total, license_used = section.get(item)
@@ -59,10 +60,10 @@ def check_jb_fls_licenses(item, params, section):
     if license_params is False:
         license_warn = None
         license_crit = None
-    elif not params:
+    elif not license_params:
         license_warn = int(license_total)
         license_crit = int(license_total)
-    elif isinstance(params[0], int):
+    elif isinstance(license_params[0], int):
         license_warn = max(0, int(license_total) - license_params[0])
         license_crit = max(0, int(license_total) - license_params[1])
     else:
