@@ -35,7 +35,7 @@ def parse_jb_fls(string_table):
     parsed = {'connection': []}
     for line in string_table:
         if line[0] == 'connection':
-            parsed['connection'].append(line[1:])
+            parsed['connection'].append(tuple(line[1:]))
         else:
             parsed[line[0]] = line[1]
     return parsed
@@ -53,7 +53,7 @@ def discovery_jb_fls(section):
 
 
 def check_jb_fls(params, section):
-    yield Result(state=State.OK, summary='Server: %s %s' % (section.get('serverUID', 'Unknown'), section.get('url')))
+    yield Result(state=State.OK, summary='Server: %s %s ' % (section.get('serverUID', 'Unknown'), section.get('url')))
 
     if section.get('health', 500) != '200':
         yield Result(state=State.WARN, summary='Not healthy %s' % section.get('health', 'Unknown'))
@@ -88,6 +88,6 @@ register.check_plugin(
     check_ruleset_name='jb_fls',
     check_default_parameters={
         'lastCallHome': (4500, 7200),
-        'updateAvailable': 'W',
+        'updateAvailable': 1,
     },
 )

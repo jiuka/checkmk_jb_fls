@@ -43,7 +43,7 @@ def _vs_jb_fls():
                     choices=[
                         (2, _('CRIT')),
                         (1, _('WARN')),
-                        (0, _('OK'))
+                        (0, _('OK')),
                         (None, _('IGNORE')),
                     ],
                     default_value='1',
