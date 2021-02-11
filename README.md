@@ -1,8 +1,6 @@
 # Checkmk extension for JetBrains Floating License Server
 
 ![build](https://github.com/jiuka/checkmk_jb_fls/workflows/build/badge.svg)
-![flake8](https://github.com/jiuka/checkmk_jb_fls/workflows/Lint/badge.svg)
-![pytest](https://github.com/jiuka/checkmk_jb_fls/workflows/pytest/badge.svg)
 
 ## Description
 
