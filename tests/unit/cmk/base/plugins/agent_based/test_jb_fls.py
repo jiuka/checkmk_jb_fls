@@ -94,7 +94,7 @@ def test_discovery_jb_fls(section, result):
         [
             Result(state=State.OK, summary='Server: fooBar https://host:1212/ '),
             Result(state=State.OK, summary='Version: 1.2.3'),
-            Result(state=State.WARN, summary='update available'),
+            Result(state=State.WARN, summary='update available to 1.2.4'),
             Result(state=State.OK, notice='Connection to https://account.jetbrains.com is OK'),
             Result(state=State.OK, summary='Last call home: 21 minutes 0 seconds'),
             Metric('age', 1260),

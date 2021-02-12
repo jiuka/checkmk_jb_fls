@@ -59,9 +59,9 @@ def check_jb_fls(params, section):
         yield Result(state=State.WARN, summary='Not healthy %s' % section.get('health', 'Unknown'))
 
     yield Result(state=State.OK, summary='Version: %s' % section.get('currentVersion', 'Unknown'))
-    if section.get('updateAvailable', 'False') != 'False' and params.get('updateAvailable', 1):
+    if section.get('updateAvailable', 'False') != 'False' and params.get('updateAvailable', 1) is not None:
         updateAvailableStatus = State(params.get('updateAvailable', 1))
-        yield Result(state=updateAvailableStatus, summary='update available')
+        yield Result(state=updateAvailableStatus, summary='update available to %s' % section.get('latestVersion', 'Unknown'))
 
     for line in section.get('connection', []):
         state = State.OK if line[1] == 'OK' else State.CRIT
