@@ -1,86 +1,144 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# jb_fls - JetBrains Floatingcheck
+#
+# Copyright (C) 2020  Marius Rieder <marius.rieder@durchmesser.ch>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import argparse
-import urllib2
-import json
+from typing import Optional, Sequence
+import logging
+import requests
+from functools import cached_property
+
+from cmk.special_agents.utils.agent_common import (
+    special_agent_main,
+)
+from cmk.special_agents.utils.argument_parsing import (
+    Args,
+    create_default_argument_parser,
+)
+
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+LOGGING = logging.getLogger('agent_jb_fls')
+
 
 class AgentJbFls:
-    def __init__(self):
-        self._cache = {}
+    '''Checkmk special Agent for JetBrains Floating License Server'''
 
     def run(self):
-        self.parse_arguments()
+        special_agent_main(self.parse_arguments, self.main)
+
+    def parse_arguments(self, argv: Optional[Sequence[str]]) -> Args:
+        parser = create_default_argument_parser(description=self.__doc__)
+
+        parser.add_argument('-U', '--url',
+                            dest='url',
+                            required=True,
+                            help='URL of the FLS server. (Example http://host:1212)')
+        parser.add_argument('-T', '--token',
+                            dest='token',
+                            required=False,
+                            help='FLS reporting token.')
+        parser.add_argument('-t', '--timeout',
+                            dest='timeout',
+                            required=False,
+                            default=10,
+                            help='HTTP connection timeout. (Default: 10)')
+
+        return parser.parse_args(argv)
+
+    def main(self, args: Args):
+        self.args = args
 
         self.report_agent()
         self.report_fls()
         if self.args.token:
             self.report_licenses()
 
-    def parse_arguments(self):
-        parser = argparse.ArgumentParser(
-                description='Checkmk Agent for JetBrains Floating License Server')
-        parser.add_argument('-T', '--token', dest='token', required=False,
-                help='FLS reporting token.')
-        parser.add_argument('-U', '--url', dest='url', required=True,
-                help='URL of the FLS server. (Example http://host:1212)')
-
-        self.args = parser.parse_args()
-
     def report_agent(self):
-        print("<<<check_mk>>>")
-        resp = self._get('check-version')
-        if resp[0] == 200:
-            print("Version: %s" % resp[1].get('currentVersion', 'unknown'))
-        else:
-            print("Version: unknown")
-        print("AgentOS: JetBrains FLS")
+        print('<<<check_mk>>>')
+        print('AgentOS: JetBrains FLS')
+        print('Version: %s' % self._check_version.get('currentVersion', 'unknown'))
 
     def report_fls(self):
-        print("<<<jb_fls:sep(9)>>>")
+        print('<<<jb_fls:sep(9)>>>')
 
         # URL
-        print("url\t%s" % self.args.url)
+        print('url\t%s' % self.args.url)
 
         # Check Health
-        health = self._get('health')
-        print("health\t%s" % health[0])
-        for key, value in health[1].items():
-            print("%s\t%s" % (key, value))
+        print('health\t%s' % self._health['status_code'])
+        for key, value in self._health.items():
+            if key == 'status_code':
+                continue
+            print('%s\t%s' % (key, value))
 
         # Check Connection
-        connection = self._get('check-connection')
-        for line in connection[1].splitlines():
+        for line in self._check_connection.splitlines():
             if not line:
                 continue
-            print("connection\t%s" %  line);
+            print('connection\t%s' % line)
 
         # Check Version
-        version = self._get('check-version')
-        if version[0] == 200:
-            for key, value in version[1].items():
-                print("%s\t%s" % (key, value))
+        for key, value in self._check_version.items():
+            if key == 'status_code':
+                continue
+            print('%s\t%s' % (key, value))
 
     def report_licenses(self):
-        print("<<<jb_fls_licenses:sep(9)>>>")
-        resp = self._get('licenses-report.json?token=%s' % (self.args.token))
-        for license in resp[1]['licenses']:
-            print("%s\t%s\t%s" % (license['name'], license['available'], license['allocated']))
+        print('<<<jb_fls_licenses:sep(9)>>>')
+        for license in self._licenses_report['licenses']:
+            print('%s\t%s\t%s' % (license['name'], license['available'], license['allocated']))
 
-    def _get(self, url):
-        if url not in self._cache:
-            self._cache[url] = self._get_remote(url)
-        return self._cache[url]
+    @cached_property
+    def _check_version(self):
+        return self._get('check-version')
 
-    def _get_remote(self, url):
+    @cached_property
+    def _health(self):
+        return self._get('health')
+
+    @cached_property
+    def _check_connection(self):
+        return self._get('check-connection')
+
+    @cached_property
+    def _licenses_report(self):
+        return self._get(f'licenses-report.json?token={self.args.token}')
+
+    @cached_property
+    def _connection(self):
+        conn = requests.Session()
+        return conn
+
+    def _get(self, url, payload=None, **kwargs) -> requests.Response:
+        full_url = '%s/%s' % (self.args.url.strip('/'), url.rstrip('/'))
+        LOGGING.debug(f'>> GET {full_url}')
+        resp = self._connection.get(full_url, json=payload, timeout=self.args.timeout, **kwargs)
+        LOGGING.debug(f'<< {resp.status_code} {resp.reason}')
         try:
-            resp = urllib2.urlopen('%s/%s' % (self.args.url, url))
-            data = resp.read()
-            try:
-                return (resp.code, json.loads(data))
-            except:
-                return (resp.code, data)
-        except urllib2.HTTPError as e:
-            return (e.code, e.read())
+            json = resp.json()
+            json['status_code'] = resp.status_code
+            return json
+        except Exception:
+            return resp.text
 
-AgentJbFls().run()
+
+if __name__ == '__main__':
+    AgentJbFls().run()
