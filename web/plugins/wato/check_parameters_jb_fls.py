@@ -21,14 +21,14 @@ from cmk.gui.i18n import _
 from cmk.gui.valuespec import (
     Age,
     Dictionary,
-    MonitoringState,
+    DropdownChoice,
     TextAscii,
     Tuple,
 )
 from cmk.gui.plugins.wato import (
-    RulespecGroupCheckParametersApplications,
     CheckParameterRulespecWithItem,
     rulespec_registry,
+    RulespecGroupCheckParametersApplications,
 )
 
 
@@ -38,7 +38,7 @@ def _vs_jb_fls():
         elements=[
             (
                 'updateAvailable',
-                MonitoringState(
+                DropdownChoice(
                     title=_('Update Available'),
                     choices=[
                         (2, _('CRIT')),

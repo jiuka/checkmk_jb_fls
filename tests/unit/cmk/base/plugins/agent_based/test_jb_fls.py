@@ -39,7 +39,7 @@ from cmk.base.plugins.agent_based import jb_fls
     ),
     (
         [['connection', 'foo', 'bar'], ['connection', 'alice', 'bob']],
-        {'connection': [['foo', 'bar'], ['alice', 'bob']]}
+        {'connection': [('foo', 'bar'), ('alice', 'bob')]}
     ),
 ])
 def test_parse_jb_fls(string_table, result):
@@ -70,7 +70,7 @@ def test_discovery_jb_fls(section, result):
             'lastCallHome': '11 Feb 2021 14:34'
         },
         [
-            Result(state=State.OK, summary='Server: fooBar https://host:1212/'),
+            Result(state=State.OK, summary='Server: fooBar https://host:1212/ '),
             Result(state=State.OK, summary='Version: 1.2.3'),
             Result(state=State.OK, notice='Connection to https://account.jetbrains.com is OK'),
             Result(state=State.OK, summary='Last call home: 21 minutes 0 seconds'),
@@ -92,7 +92,7 @@ def test_discovery_jb_fls(section, result):
             'lastCallHome': '11 Feb 2021 14:34'
         },
         [
-            Result(state=State.OK, summary='Server: fooBar https://host:1212/'),
+            Result(state=State.OK, summary='Server: fooBar https://host:1212/ '),
             Result(state=State.OK, summary='Version: 1.2.3'),
             Result(state=State.WARN, summary='update available'),
             Result(state=State.OK, notice='Connection to https://account.jetbrains.com is OK'),
@@ -115,7 +115,7 @@ def test_discovery_jb_fls(section, result):
             'lastCallHome': '11 Feb 2021 14:34'
         },
         [
-            Result(state=State.OK, summary='Server: fooBar https://host:1212/'),
+            Result(state=State.OK, summary='Server: fooBar https://host:1212/ '),
             Result(state=State.OK, summary='Version: 1.2.3'),
             Result(state=State.OK, notice='Connection to https://account.jetbrains.com is OK'),
             Result(state=State.OK, summary='Last call home: 21 minutes 0 seconds'),
@@ -136,7 +136,7 @@ def test_discovery_jb_fls(section, result):
             'lastCallHome': '11 Feb 2021 14:34'
         },
         [
-            Result(state=State.OK, summary='Server: fooBar https://host:1212/'),
+            Result(state=State.OK, summary='Server: fooBar https://host:1212/ '),
             Result(state=State.OK, summary='Version: 1.2.3'),
             Result(state=State.OK, notice='Connection to https://account.jetbrains.com is OK'),
             Result(state=State.CRIT, summary='Last call home: 21 minutes 0 seconds (warn/crit at 30 minutes 0 seconds/15 minutes 0 seconds)'),
