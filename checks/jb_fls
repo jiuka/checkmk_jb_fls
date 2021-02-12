@@ -55,11 +55,11 @@ def check_jb_fls(item, params, parsed):
     if parsed.get('updateAvailable', 'False') != 'False':
         updateAvailableStatus = params.get('updateAvailable', 'W')
         if updateAvailableStatus == 'C':
-            yield 2, 'update available'
+            yield 2, 'update available to %s' % parsed.get('latestVersion', 'Unknown')
         elif updateAvailableStatus == 'W':
-            yield 1, 'update available'
+            yield 1, 'update available to %s' % parsed.get('latestVersion', 'Unknown')
         elif updateAvailableStatus == 'O':
-            yield 0, 'update available'
+            yield 0, 'update available to %s' % parsed.get('latestVersion', 'Unknown')
 
 
     for line in parsed.get('connection', []):
