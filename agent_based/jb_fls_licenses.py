@@ -50,7 +50,6 @@ def discovery_jb_fls_licenses(section):
 
 def check_jb_fls_licenses(item, params, section):
     if item not in section:
-        print(f'{item} <> {section}')
         return
 
     license_total, license_used = section.get(item)
