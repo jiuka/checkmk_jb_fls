@@ -54,7 +54,6 @@ def test_discovery_jb_fls(section, result):
     assert list(jb_fls.discovery_jb_fls(section)) == result
 
 
-@pytest.mark.freeze_time('2021-02-11 14:55')
 @pytest.mark.parametrize('params, section, result', [
     (
         {},
@@ -144,5 +143,6 @@ def test_discovery_jb_fls(section, result):
         ]
     ),
 ])
-def test_check_jb_fls(params, section, result):
+def test_check_jb_fls(freezer, params, section, result):
+    freezer.move_to('2021-02-11 14:55')
     assert list(jb_fls.check_jb_fls(params, section)) == result

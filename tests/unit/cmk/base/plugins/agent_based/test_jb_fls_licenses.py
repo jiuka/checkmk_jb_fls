@@ -71,7 +71,6 @@ JB_FLS_LICENSES_SECTION = {
 }
 
 
-@pytest.mark.freeze_time('2021-02-11 14:55')
 @pytest.mark.parametrize('item, params, section, result', [
     (
         'Foo', {},
