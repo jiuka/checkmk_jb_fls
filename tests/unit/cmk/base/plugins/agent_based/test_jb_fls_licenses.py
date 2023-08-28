@@ -118,6 +118,14 @@ JB_FLS_LICENSES_SECTION = {
         ]
     ),
     (
+        'CLion Toolbox', {'auto-migration-wrapper-key': False},
+        JB_FLS_LICENSES_SECTION,
+        [
+            Metric('licenses', 23.0, levels=(23.0, 23.0), boundaries=(0.0, 23.0)),
+            Result(state=State.CRIT, summary='used 23 out of 23 licenses (warn/crit at 23/23)')
+        ]
+    ),
+    (
         'CLion Toolbox', {'licenses': False},
         JB_FLS_LICENSES_SECTION,
         [

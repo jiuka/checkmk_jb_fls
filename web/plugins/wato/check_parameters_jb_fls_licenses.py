@@ -21,12 +21,25 @@
 
 from cmk.gui.i18n import _
 from cmk.gui.plugins.wato.check_parameters.licenses import _vs_license
-from cmk.gui.valuespec import TextAscii
+from cmk.gui.valuespec import Dictionary, TextAscii
 from cmk.gui.plugins.wato import (
     RulespecGroupCheckParametersApplications,
     CheckParameterRulespecWithItem,
     rulespec_registry,
 )
+
+
+def _vs_jb_fls_licenses():
+    return Dictionary(
+        title=_('JetBrains Floating License Server'),
+        elements=[
+            (
+                'licenses',
+                _vs_license()
+            ),
+        ],
+        required_keys = ['licenses']
+    )
 
 
 def _item_spec_jb_fls_licenses():
@@ -41,6 +54,6 @@ rulespec_registry.register(
         check_group_name="jb_fls_licenses",
         group=RulespecGroupCheckParametersApplications,
         item_spec=_item_spec_jb_fls_licenses,
-        parameter_valuespec=_vs_license,
+        parameter_valuespec=_vs_jb_fls_licenses,
         title=lambda: _("Number of used JetBrains Floating licenses"),
     ))
