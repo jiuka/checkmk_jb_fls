@@ -66,15 +66,9 @@ class AgentJbFls:
     def main(self, args: Args):
         self.args = args
 
-        self.report_agent()
         self.report_fls()
         if self.args.token:
             self.report_licenses()
-
-    def report_agent(self):
-        print('<<<check_mk>>>')
-        print('AgentOS: JetBrains FLS')
-        print('Version: %s' % self._check_version.get('currentVersion', 'unknown'))
 
     def report_fls(self):
         print('<<<jb_fls:sep(9)>>>')
