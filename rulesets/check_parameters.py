@@ -45,7 +45,7 @@ def _parameter_form_jb_fls():
                 parameter_form=ServiceState(
                     title=Title('Update Available'),
                     help_text=Help('State if updates are available'),
-                    prefill=DefaultValue(ServiceState.WARN),  
+                    prefill=DefaultValue(ServiceState.WARN),
                 ),
             ),
             "lastCallHome": DictElement(
