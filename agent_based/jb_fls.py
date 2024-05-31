@@ -3,7 +3,7 @@
 #
 # jb_fls - JetBrains Floatingcheck
 #
-# Copyright (C) 2020  Marius Rieder <marius.rieder@durchmesser.ch>
+# Copyright (C) 2020-2024  Marius Rieder <marius.rieder@durchmesser.ch>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,17 +21,26 @@
 
 
 import datetime
-from .agent_based_api.v1 import (
-    check_levels,
-    register,
+from collections.abc import Mapping
+
+from cmk.agent_based.v1 import check_levels
+from cmk.agent_based.v2 import (
+    AgentSection,
+    CheckPlugin,
+    CheckResult,
+    DiscoveryResult,
     render,
     Result,
     Service,
     State,
+    StringTable,
 )
 
 
-def parse_jb_fls(string_table):
+_Section = Mapping[str, str | tuple[str, str]]
+
+
+def parse_jb_fls(string_table: StringTable) -> _Section:
     parsed = {'connection': []}
     for line in string_table:
         if line[0] == 'connection':
@@ -41,18 +50,22 @@ def parse_jb_fls(string_table):
     return parsed
 
 
-register.agent_section(
-    name='jb_fls',
+agent_section_jb_fls = AgentSection(
+    name="jb_fls",
     parse_function=parse_jb_fls,
 )
 
 
-def discovery_jb_fls(section):
+def discovery_jb_fls(section: _Section) -> DiscoveryResult:
     if 'serverUID' in section:
         yield Service()
 
 
-def check_jb_fls(params, section):
+def check_jb_fls(params, section: _Section) -> CheckResult:
+    if 'serverUID' not in section:
+        yield Result(state=State.UNKNOWN, summary='Server: %s not found' % (section.get('url')))
+        return
+
     yield Result(state=State.OK, summary='Server: %s %s ' % (section.get('serverUID', 'Unknown'), section.get('url')))
 
     if section.get('health', 500) != '200':
@@ -80,7 +93,7 @@ def check_jb_fls(params, section):
     )
 
 
-register.check_plugin(
+check_plugin_jb_fls = CheckPlugin(
     name='jb_fls',
     service_name='JB FLS',
     discovery_function=discovery_jb_fls,

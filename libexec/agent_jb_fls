@@ -1,5 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- encoding: utf-8; py-indent-offset: 4 -*-
+#
+# jb_fls_licenses - JetBrains Floating Licenses check
 #
 # Copyright (C) 2020  Marius Rieder <marius.rieder@durchmesser.ch>
 #
@@ -17,12 +19,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import sys
 
-def agent_jb_fls_arguments(params, hostname, ipaddress):
-    args = ['--url', params['url']]
-    if 'token' in params:
-        args += ['--token', passwordstore_get_cmdline('%s', params['token'])]
-    return args
+from cmk_addons.plugins.jb_fls.lib.agent import AgentJbFls
 
-
-special_agent_info['jb_fls'] = agent_jb_fls_arguments
+if __name__ == "__main__":
+    sys.exit(AgentJbFls().run())

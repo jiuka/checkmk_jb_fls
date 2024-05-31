@@ -3,7 +3,7 @@
 #
 # jb_fls - JetBrains Floatingcheck
 #
-# Copyright (C) 2020  Marius Rieder <marius.rieder@durchmesser.ch>
+# Copyright (C) 2020-2024  Marius Rieder <marius.rieder@durchmesser.ch>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,17 +20,15 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from typing import Optional, Sequence
-import logging
 import requests
+import logging
 from functools import cached_property
 
-from cmk.special_agents.utils.agent_common import (
+from cmk.special_agents.v0_unstable.agent_common import (
+    SectionWriter,
     special_agent_main,
 )
-from cmk.special_agents.utils.argument_parsing import (
-    Args,
-    create_default_argument_parser,
-)
+from cmk.special_agents.v0_unstable.argument_parsing import Args, create_default_argument_parser
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -42,7 +40,7 @@ class AgentJbFls:
     '''Checkmk special Agent for JetBrains Floating License Server'''
 
     def run(self):
-        special_agent_main(self.parse_arguments, self.main)
+        return special_agent_main(self.parse_arguments, self.main)
 
     def parse_arguments(self, argv: Optional[Sequence[str]]) -> Args:
         parser = create_default_argument_parser(description=self.__doc__)
@@ -71,34 +69,33 @@ class AgentJbFls:
             self.report_licenses()
 
     def report_fls(self):
-        print('<<<jb_fls:sep(9)>>>')
+        with SectionWriter('jb_fls', separator='\t') as writer:
+            # URL
+            writer.append(f"url\t{self.args.url}")
 
-        # URL
-        print('url\t%s' % self.args.url)
+            # Check Health
+            writer.append(f"health\t{self._health['status_code']}")
+            for key, value in self._health.items():
+                if key == 'status_code':
+                    continue
+                writer.append(f"{key}\t{value}")
 
-        # Check Health
-        print('health\t%s' % self._health['status_code'])
-        for key, value in self._health.items():
-            if key == 'status_code':
-                continue
-            print('%s\t%s' % (key, value))
+            # Check Connection
+            for line in self._check_connection.splitlines():
+                if not line:
+                    continue
+                writer.append(f"connection\t{line}")
 
-        # Check Connection
-        for line in self._check_connection.splitlines():
-            if not line:
-                continue
-            print('connection\t%s' % line)
-
-        # Check Version
-        for key, value in self._check_version.items():
-            if key == 'status_code':
-                continue
-            print('%s\t%s' % (key, value))
+            # Check Version
+            for key, value in self._check_version.items():
+                if key == 'status_code':
+                    continue
+                writer.append(f"{key}\t{value}")
 
     def report_licenses(self):
-        print('<<<jb_fls_licenses:sep(9)>>>')
-        for license in self._licenses_report['licenses']:
-            print('%s\t%s\t%s' % (license['name'], license['available'], license['allocated']))
+        with SectionWriter('jb_fls_licenses', separator='\t') as writer:
+            for license in self._licenses_report['licenses']:
+                writer.append(f"{license['name']}\t{license['available']}\t{license['allocated']}")
 
     @cached_property
     def _check_version(self):
@@ -132,7 +129,3 @@ class AgentJbFls:
             return json
         except Exception:
             return resp.text
-
-
-if __name__ == '__main__':
-    AgentJbFls().run()

@@ -22,12 +22,7 @@
 import pytest  # type: ignore[import]
 import requests  # noqa: F401
 
-from importlib.util import spec_from_loader, module_from_spec
-from importlib.machinery import SourceFileLoader
-
-spec = spec_from_loader("agent_jb_fls", SourceFileLoader("agent_jb_fls", "agents/special/agent_jb_fls"))
-agent_jb_fls = module_from_spec(spec)
-spec.loader.exec_module(agent_jb_fls)
+from cmk_addons.plugins.jb_fls.lib.agent import AgentJbFls
 
 
 @pytest.fixture
@@ -66,16 +61,13 @@ class Args:
 
 
 def test_AgentJbFls_main(capsys, fls_mock):
-    agent = agent_jb_fls.AgentJbFls()
+    agent = AgentJbFls()
     agent.main(Args())
 
     captured = capsys.readouterr()
 
     assert captured.err == ""
     assert captured.out.splitlines() == [
-        '<<<check_mk>>>',
-        'AgentOS: JetBrains FLS',
-        'Version: 123',
         '<<<jb_fls:sep(9)>>>',
         'url\thttp://jbfls:1212/',
         'health\t200',
@@ -90,7 +82,7 @@ def test_AgentJbFls_main(capsys, fls_mock):
 
 
 def test_AgentJbFls_main_w_token(capsys, fls_mock):
-    agent = agent_jb_fls.AgentJbFls()
+    agent = AgentJbFls()
     args = Args()
     args.token = 'foo'
     agent.main(args)
@@ -99,9 +91,6 @@ def test_AgentJbFls_main_w_token(capsys, fls_mock):
 
     assert captured.err == ""
     assert captured.out.splitlines() == [
-        '<<<check_mk>>>',
-        'AgentOS: JetBrains FLS',
-        'Version: 123',
         '<<<jb_fls:sep(9)>>>',
         'url\thttp://jbfls:1212/',
         'health\t200',

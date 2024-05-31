@@ -24,11 +24,7 @@ For the best development experience use [VSCode](https://code.visualstudio.com/)
 
 ## Directories
 
-The following directories in this repo are getting mapped into the Checkmk site.
-
-* `agents`, `checkman`, `checks`, `doc`, `inventory`, `notifications`, `pnp-templates`, `web` are mapped into `local/share/check_mk/`
-* `agent_based` is mapped to `local/lib/check_mk/base/plugins/agent_based`
-* `nagios_plugins` is mapped to `local/lib/nagios/plugins`
+The repository is mounted into `/omd/sites/cmk/local/lib/python3/cmk_addons/plugins/jb_fls`
 
 ## Continuous integration
 ### Local
