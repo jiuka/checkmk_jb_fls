@@ -3,24 +3,20 @@
     'description': u'Special Agent to check the JetBrains Floating License Server.',
     'download_url': 'https://github.com/jiuka/checkmk_jb_fls/releases',
     'files': {
-      'agent_based': ['jb_fls.py', 'jb_fls_licenses.py'],
-        'agents': ['special/agent_jb_fls'],
-        'checkman': [],
-        'checks': ['agent_jb_fls'],
-        'doc': [],
-        'inventory': [],
-        'notifications': [],
-        'pnp-templates': [],
-        'web': [
-          'plugins/metrics/jb_fls.py',
-          'plugins/wato/check_parameters_jb_fls.py',
-          'plugins/wato/check_parameters_jb_fls_licenses.py',
-          'plugins/wato/datasource_jb_fls.py',
-        ]},
+        'cmk_addons_plugins': [
+            'jb_fls/agent_based/jb_fls.py',
+            'jb_fls/agent_based/jb_fls_licenses.py',
+            'jb_fls/lib/agent.py',
+            'jb_fls/libexec/agent_jb_fls',
+            'jb_fls/rulesets/check_parameters.py',
+            'jb_fls/rulesets/datasource.py',
+            'jb_fls/server_side_calls/special_agent.py',
+        ],
+    },
     'name': 'jb_fls',
     'title': u'Special Agent for the JetBrains Floating License Server',
-    'version': '1.0.3',
-    'version.min_required': '2.0.0b6',
-    'version.packaged': '2.2.0',
-    'version.usable_until': '2.3.0'
+    'version': '2.3.0-0',
+    'version.min_required': '2.3.0p3',
+    'version.packaged': '2.3.0',
+    'version.usable_until': '2.4.0'
 }

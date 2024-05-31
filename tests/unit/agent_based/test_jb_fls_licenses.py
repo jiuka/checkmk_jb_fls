@@ -26,7 +26,7 @@ from cmk.base.plugins.agent_based.agent_based_api.v1 import (
     Service,
     State,
 )
-from cmk.base.plugins.agent_based import jb_fls_licenses
+from cmk_addons.plugins.jb_fls.agent_based import jb_fls_licenses
 
 
 @pytest.mark.parametrize('string_table, result', [
@@ -78,59 +78,84 @@ JB_FLS_LICENSES_SECTION = {
         []
     ),
     (
-        'All Products Pack Toolbox', {},
+        'All Products Pack Toolbox', {'licenses': ('crit_on_all', True)},
         JB_FLS_LICENSES_SECTION,
         [
+            Result(state=State.OK, summary='Licenses available: 42'),
+            Result(state=State.OK, summary='used: 21'),
             Metric('licenses', 21.0, levels=(42.0, 42.0), boundaries=(0.0, 42.0)),
-            Result(state=State.OK, summary='used 21 out of 42 licenses (warn/crit at 42/42)')
         ]
     ),
     (
-        'All Products Pack Toolbox', {'licenses': (5, 0)},
+        'All Products Pack Toolbox', {'licenses': ('absolute', {'warn': 5, 'crit': 0})},
         JB_FLS_LICENSES_SECTION,
         [
+            Result(state=State.OK, summary='Licenses available: 42'),
+            Result(state=State.OK, summary='used: 21'),
             Metric('licenses', 21.0, levels=(37.0, 42.0), boundaries=(0.0, 42.0)),
-            Result(state=State.OK, summary='used 21 out of 42 licenses (warn/crit at 37/42)')
         ]
     ),
     (
-        'All Products Pack Toolbox', {'licenses': (30, 0)},
+        'All Products Pack Toolbox', {'licenses': ('absolute', {'warn': 30, 'crit': 0})},
         JB_FLS_LICENSES_SECTION,
         [
+            Result(state=State.OK, summary='Licenses available: 42'),
+            Result(state=State.WARN, summary='used: 21 (warn/crit at 12/42)'),
             Metric('licenses', 21.0, levels=(12.0, 42.0), boundaries=(0.0, 42.0)),
-            Result(state=State.WARN, summary='used 21 out of 42 licenses (warn/crit at 12/42)')
         ]
     ),
     (
-        'All Products Pack Toolbox', {'licenses': (30, 25)},
+        'All Products Pack Toolbox', {'licenses': ('absolute', {'warn': 30, 'crit': 25})},
         JB_FLS_LICENSES_SECTION,
         [
+            Result(state=State.OK, summary='Licenses available: 42'),
+            Result(state=State.CRIT, summary='used: 21 (warn/crit at 12/17)'),
             Metric('licenses', 21.0, levels=(12.0, 17.0), boundaries=(0.0, 42.0)),
-            Result(state=State.CRIT, summary='used 21 out of 42 licenses (warn/crit at 12/17)')
         ]
     ),
     (
-        'CLion Toolbox', {},
+        'All Products Pack Toolbox', {'licenses': ('percentage', {'warn': 10.0, 'crit': 0.0})},
         JB_FLS_LICENSES_SECTION,
         [
+            Result(state=State.OK, summary='Licenses available: 42'),
+            Result(state=State.OK, summary='used: 21'),
+            Metric('licenses', 21.0, levels=(37.0, 42.0), boundaries=(0.0, 42.0)),
+        ]
+    ),
+    (
+        'All Products Pack Toolbox', {'licenses': ('percentage', {'warn': 50.0, 'crit': 0.0})},
+        JB_FLS_LICENSES_SECTION,
+        [
+            Result(state=State.OK, summary='Licenses available: 42'),
+            Result(state=State.WARN, summary='used: 21 (warn/crit at 21/42)'),
+            Metric('licenses', 21.0, levels=(21.0, 42.0), boundaries=(0.0, 42.0)),
+        ]
+    ),
+    (
+        'All Products Pack Toolbox', {'licenses': ('percentage', {'warn': 75.0, 'crit': 50.0})},
+        JB_FLS_LICENSES_SECTION,
+        [
+            Result(state=State.OK, summary='Licenses available: 42'),
+            Result(state=State.CRIT, summary='used: 21 (warn/crit at 10/21)'),
+            Metric('licenses', 21.0, levels=(10.0, 21.0), boundaries=(0.0, 42.0)),
+        ]
+    ),
+    (
+        'CLion Toolbox', {'licenses': ('crit_on_all', True)},
+        JB_FLS_LICENSES_SECTION,
+        [
+            Result(state=State.OK, summary='Licenses available: 23'),
+            Result(state=State.CRIT, summary='used: 23 (warn/crit at 23/23)'),
             Metric('licenses', 23.0, levels=(23.0, 23.0), boundaries=(0.0, 23.0)),
-            Result(state=State.CRIT, summary='used 23 out of 23 licenses (warn/crit at 23/23)')
         ]
     ),
     (
-        'CLion Toolbox', {'auto-migration-wrapper-key': False},
+        'CLion Toolbox', {'licenses': ('always_ok', False)},
         JB_FLS_LICENSES_SECTION,
         [
-            Metric('licenses', 23.0, levels=(23.0, 23.0), boundaries=(0.0, 23.0)),
-            Result(state=State.CRIT, summary='used 23 out of 23 licenses (warn/crit at 23/23)')
-        ]
-    ),
-    (
-        'CLion Toolbox', {'licenses': False},
-        JB_FLS_LICENSES_SECTION,
-        [
+            Result(state=State.OK, summary='Licenses available: 23'),
+            Result(state=State.OK, summary='used: 23'),
             Metric('licenses', 23.0, boundaries=(0.0, 23.0)),
-            Result(state=State.OK, summary='used 23 out of 23 licenses')
         ]
     ),
 ])

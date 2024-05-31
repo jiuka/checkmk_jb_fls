@@ -26,7 +26,8 @@ from cmk.base.plugins.agent_based.agent_based_api.v1 import (
     Service,
     State,
 )
-from cmk.base.plugins.agent_based import jb_fls
+
+from cmk_addons.plugins.jb_fls.agent_based import jb_fls
 
 
 @pytest.mark.parametrize('string_table, result', [
@@ -40,6 +41,10 @@ from cmk.base.plugins.agent_based import jb_fls
     (
         [['connection', 'foo', 'bar'], ['connection', 'alice', 'bob']],
         {'connection': [('foo', 'bar'), ('alice', 'bob')]}
+    ),
+    (
+        [['url', 'http://host:1212']],
+        {'connection': [], 'url': 'http://host:1212'}
     ),
 ])
 def test_parse_jb_fls(string_table, result):
@@ -140,6 +145,16 @@ def test_discovery_jb_fls(section, result):
             Result(state=State.OK, notice='Connection to https://account.jetbrains.com is OK'),
             Result(state=State.CRIT, summary='Last call home: 21 minutes 0 seconds (warn/crit at 30 minutes 0 seconds/15 minutes 0 seconds)'),
             Metric('age', 1260, levels=(1800.0, 900.0)),
+        ]
+    ),
+    (
+        {},
+        {
+            'url': 'https://host:1212/',
+            'connection': [],
+        },
+        [
+            Result(state=State.UNKNOWN, summary='Server: https://host:1212/ not found'),
         ]
     ),
 ])
